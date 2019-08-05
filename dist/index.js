@@ -34,6 +34,12 @@ const SoundPlayer = {
     onFinishedPlaying: (callback) => {
         _finishedPlayingListener = _soundPlayerEmitter.addListener('FinishedPlaying', callback);
     },
+    onFinishedLoading: (callback) => {
+        _finishedPlayingListener = _soundPlayerEmitter.addListener('FinishedLoading', callback);
+    },
+    onFinishedLoadingURL: (callback) => {
+        _finishedPlayingListener = _soundPlayerEmitter.addListener('FinishedLoadingURL', callback);
+    },
     pause: () => __awaiter(this, void 0, void 0, function* () {
         return RNSoundPlayer.pause();
     }),

@@ -33,6 +33,20 @@ const SoundPlayer = {
 		  callback
 		)
 	},
+
+	onFinishedLoading: (callback: (success: boolean) => any) => {
+		_finishedPlayingListener = _soundPlayerEmitter.addListener(
+		  'FinishedLoading',
+		  callback
+		)
+	},
+
+	onFinishedLoadingURL: (callback: (success: boolean) => any) => {
+		_finishedPlayingListener = _soundPlayerEmitter.addListener(
+		  'FinishedLoadingURL',
+		  callback
+		)
+	},
 	
 	pause: async (): Promise<boolean> => {
 		return RNSoundPlayer.pause()

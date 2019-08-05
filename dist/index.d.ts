@@ -8,6 +8,8 @@ declare const SoundPlayer: {
     loadSoundFile: (name: string, type: string, numberOfLoops: number, streamType: StreamType) => Promise<void>;
     loadUrl: (url: string, streamType: StreamType) => Promise<void>;
     onFinishedPlaying: (callback: (success: boolean) => any) => void;
+    onFinishedLoading: (callback: (success: boolean) => any) => void;
+    onFinishedLoadingURL: (callback: (success: boolean) => any) => void;
     pause: () => Promise<boolean>;
     resume: () => Promise<boolean>;
     stop: () => Promise<boolean>;
