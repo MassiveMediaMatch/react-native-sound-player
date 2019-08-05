@@ -127,7 +127,13 @@ RCT_REMAP_METHOD(getInfo,
         self.avPlayer = nil;
     }
 
-    NSString *soundFilePath = [[NSBundle mainBundle] pathForResource:name ofType:type];
+    NSString *soundFilePath;
+
+	if ([name containsString:@"/assets/"]) {
+		soundFilePath = [[NSBundle mainBundle] pathForResource:[name stringByReplacingOccurrencesOfString:@"/assets/" withString:@""] ofType:type];
+	} else {
+		soundFilePath = [[NSBundle mainBundle] pathForResource:name ofType:type];
+	}
 
     if (soundFilePath == nil) {
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES);

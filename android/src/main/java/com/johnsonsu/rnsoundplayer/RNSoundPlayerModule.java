@@ -140,14 +140,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
     this.numberOfPlays = 0;
     
     if (this.mediaPlayer == null) {
-      int soundResID = getReactApplicationContext().getResources().getIdentifier(name, "raw", getReactApplicationContext().getPackageName());
-
-      if (soundResID > 0) {
-        this.mediaPlayer = MediaPlayer.create(getCurrentActivity(), soundResID);
-      } else {
-        this.mediaPlayer = MediaPlayer.create(getCurrentActivity(), this.getUriFromFile(name, type));
-      }
-
+      this.mediaPlayer = new MediaPlayer();
       this.mediaPlayer.setOnCompletionListener(
         new OnCompletionListener() {
           @Override
@@ -163,19 +156,17 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
           }
       });
     } else {
-      Uri uri;
-      int soundResID = getReactApplicationContext().getResources().getIdentifier(name, "raw", getReactApplicationContext().getPackageName());
-
-      if (soundResID > 0) {
-        uri = Uri.parse("android.resource://" + getReactApplicationContext().getPackageName() + "/raw/" + name);
-      } else {
-        uri = this.getUriFromFile(name, type);
-      }
-
       this.mediaPlayer.reset();
-      this.mediaPlayer.setDataSource(getCurrentActivity(), uri);
       this.mediaPlayer.prepare();
-      this.applyStreamType(StreamType.fromString(streamType));
+    }
+    this.applyStreamType(StreamType.fromString(streamType));
+    if (name.contains("/assets/")) {
+      String fileName = name.replace("/assets/", "") + '.' + type;
+      AssetFileDescriptor afd = getReactApplicationContext().getAssets().openFd(fileName);
+      this.mediaPlayer.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
+    } else {
+      Uri uri = Uri.parse("android.resource://" + getReactApplicationContext().getPackageName() + "/raw/" + name);
+      this.mediaPlayer.setDataSource(getCurrentActivity(), uri);
     }
 
     if (numberOfLoops < 0) {
