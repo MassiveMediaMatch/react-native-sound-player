@@ -19,14 +19,14 @@ const { RNSoundPlayer } = react_native_1.NativeModules;
 const _soundPlayerEmitter = new react_native_1.NativeEventEmitter(RNSoundPlayer);
 let _finishedPlayingListener = null;
 const SoundPlayer = {
-    playSoundFile: (name, type, streamType) => __awaiter(this, void 0, void 0, function* () {
-        return RNSoundPlayer.playSoundFile(name, type, streamType);
+    playSoundFile: (name, type, numberOfLoops, streamType) => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.playSoundFile(name, type, numberOfLoops, streamType);
     }),
     playUrl: (url, streamType) => __awaiter(this, void 0, void 0, function* () {
         return RNSoundPlayer.playUrl(url, streamType);
     }),
-    loadSoundFile: (name, type, streamType) => __awaiter(this, void 0, void 0, function* () {
-        return RNSoundPlayer.loadSoundFile(name, type, streamType);
+    loadSoundFile: (name, type, numberOfLoops, streamType) => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.loadSoundFile(name, type, numberOfLoops, streamType);
     }),
     loadUrl: (url, streamType) => __awaiter(this, void 0, void 0, function* () {
         return RNSoundPlayer.loadUrl(url, streamType);
