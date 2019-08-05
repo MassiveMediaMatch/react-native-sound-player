@@ -17,7 +17,29 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.os.Build;
 
+enum StreamType {
+  RINGTONE("RINGTONE"),
+  MEDIA("MEDIA");
+
+   private String streamType;
+
+   StreamType(String streamType) {
+    this.streamType = streamType;
+  }
+
+   public static StreamType fromString(String text) {
+    for (StreamType b : StreamType.values()) {
+      if (b.streamType.equalsIgnoreCase(text)) {
+        return b;
+      }
+    }
+    return null;
+  }
+}
 
 public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 
@@ -40,25 +62,25 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void playSoundFile(String name, String type) throws IOException {
-    mountSoundFile(name, type);
+  public void playSoundFile(String name, String type, String streamType) throws IOException {
+    mountSoundFile(name, type, streamType);
     this.mediaPlayer.start();
   }
 
   @ReactMethod
-  public void loadSoundFile(String name, String type) throws IOException {
-    mountSoundFile(name, type);
+  public void loadSoundFile(String name, String type, String streamType) throws IOException {
+    mountSoundFile(name, type, streamType);
   }
 
   @ReactMethod
-  public void playUrl(String url) throws IOException {
-    prepareUrl(url);
+  public void playUrl(String url, String streamType) throws IOException {
+    prepareUrl(url, streamType);
     this.mediaPlayer.start();
   }
 
   @ReactMethod
-  public void loadUrl(String url) throws IOException {
-    prepareUrl(url);
+  public void loadUrl(String url, String streamType) throws IOException {
+    prepareUrl(url, streamType);
   }
 
   @ReactMethod
@@ -113,7 +135,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
         .emit(eventName, params);
   }
 
-  private void mountSoundFile(String name, String type) throws IOException {
+  private void mountSoundFile(String name, String type, String streamType) throws IOException {
     if (this.mediaPlayer == null) {
       int soundResID = getReactApplicationContext().getResources().getIdentifier(name, "raw", getReactApplicationContext().getPackageName());
 
@@ -145,6 +167,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
       this.mediaPlayer.reset();
       this.mediaPlayer.setDataSource(getCurrentActivity(), uri);
       this.mediaPlayer.prepare();
+      this.applyStreamType(StreamType.fromString(streamType));
     }
 
     WritableMap params = Arguments.createMap();
@@ -172,7 +195,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
     return Uri.parse("file://" + folder + "/" + file);
   }
 
-  private void prepareUrl(String url) throws IOException {
+  private void prepareUrl(String url, String streamType) throws IOException {
     if (this.mediaPlayer == null) {
       Uri uri = Uri.parse(url);
       this.mediaPlayer = MediaPlayer.create(getCurrentActivity(), uri);
@@ -190,6 +213,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
       this.mediaPlayer.reset();
       this.mediaPlayer.setDataSource(getCurrentActivity(), uri);
       this.mediaPlayer.prepare();
+      this.applyStreamType(StreamType.fromString(streamType));
     }
     WritableMap params = Arguments.createMap();
     params.putBoolean("success", true);
@@ -199,4 +223,27 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
     onFinshedLoadingURLParams.putString("url", url);
     sendEvent(getReactApplicationContext(), EVENT_FINISHED_LOADING_URL, onFinshedLoadingURLParams);
   }
+
+  private void applyStreamType (StreamType streamType) {
+     switch (streamType) {
+      case RINGTONE:
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          AudioAttributes audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE).build();
+          this.mediaPlayer.setAudioAttributes(audioAttributes);
+        } else {
+          this.mediaPlayer.setAudioStreamType(AudioManager.STREAM_RING);
+        }
+        break;
+
+       case MEDIA:
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          AudioAttributes audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).build();
+          this.mediaPlayer.setAudioAttributes(audioAttributes);
+        } else {
+          this.mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        }
+        break;
+    }
+
+   }
 }

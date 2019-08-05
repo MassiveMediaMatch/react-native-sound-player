@@ -10,21 +10,26 @@ const _soundPlayerEmitter = new NativeEventEmitter(RNSoundPlayer)
 let _finishedPlayingListener = null
 let _finishedLoadingListener = null
 
-module.exports = {
+enum StreamType {
+	RINGTONE = 'RINGTONE',
+	MEDIA = 'MEDIA',
+}
 
-  playSoundFile: (name: string, type: string) => {
+const SoundPlayer = {
+
+  playSoundFile: (name: string, type: string, streamType: StreamType) => {
     RNSoundPlayer.playSoundFile(name, type)
   },
 
-  loadSoundFile: (name: string, type: string) => {
+  loadSoundFile: (name: string, type: string, streamType: StreamType) => {
     RNSoundPlayer.loadSoundFile(name, type)
   },
 
-  playUrl: (url: string) => {
+  playUrl: (url: string, streamType: StreamType) => {
     RNSoundPlayer.playUrl(url)
   },
 
-  loadUrl: (url: string) => {
+  loadUrl: (url: string, streamType: StreamType) => {
     RNSoundPlayer.loadUrl(url)
   },
 
@@ -100,4 +105,9 @@ module.exports = {
       _finishedLoadingListener = undefined
     }
   }
+}
+
+module.exports = {
+  StreamType: StreamType,
+  SoundPlayer: SoundPlayer
 }

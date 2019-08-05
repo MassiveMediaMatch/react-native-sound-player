@@ -14,21 +14,21 @@ static NSString *const EVENT_FINISHED_LOADING_URL = @"FinishedLoadingURL";
 static NSString *const EVENT_FINISHED_PLAYING = @"FinishedPlaying";
 
 
-RCT_EXPORT_METHOD(playUrl:(NSString *)url) {
+RCT_EXPORT_METHOD(playUrl:(NSString *)url streamType:(NSString *)streamType) {
     [self prepareUrl:url];
     [self.avPlayer play];
 }
 
-RCT_EXPORT_METHOD(loadUrl:(NSString *)url) {
+RCT_EXPORT_METHOD(loadUrl:(NSString *)url streamType:(NSString *)streamType) {
     [self prepareUrl:url];
 }
 
-RCT_EXPORT_METHOD(playSoundFile:(NSString *)name ofType:(NSString *)type) {
+RCT_EXPORT_METHOD(playSoundFile:(NSString *)name ofType:(NSString *)type streamType:(NSString *)streamType) {
     [self mountSoundFile:name ofType:type];
     [self.player play];
 }
 
-RCT_EXPORT_METHOD(loadSoundFile:(NSString *)name ofType:(NSString *)type) {
+RCT_EXPORT_METHOD(loadSoundFile:(NSString *)name ofType:(NSString *)type streamType:(NSString *)streamType) {
     [self mountSoundFile:name ofType:type];
 }
 
