@@ -11,16 +11,16 @@ const _soundPlayerEmitter: NativeEventEmitter = new NativeEventEmitter(RNSoundPl
 let _finishedPlayingListener: EmitterSubscription | null = null
 
 const SoundPlayer = {
-	playSoundFile: async (name: string, type: string, streamType: StreamType): Promise<void> => {
-		return RNSoundPlayer.playSoundFile(name, type, streamType)
+	playSoundFile: async (name: string, type: string, numberOfLoops: number, streamType: StreamType): Promise<void> => {
+		return RNSoundPlayer.playSoundFile(name, type, numberOfLoops, streamType)
 	},
 	
 	playUrl: async (url: string, streamType: StreamType): Promise<void> => {
 		return RNSoundPlayer.playUrl(url, streamType)
 	},
 
-	loadSoundFile: async (name: string, type: string, streamType: StreamType): Promise<void> => {
-		return RNSoundPlayer.loadSoundFile(name, type, streamType)
+	loadSoundFile: async (name: string, type: string, numberOfLoops: number, streamType: StreamType): Promise<void> => {
+		return RNSoundPlayer.loadSoundFile(name, type, numberOfLoops, streamType)
 	},
 	
 	loadUrl: async (url: string, streamType: StreamType): Promise<void> => {

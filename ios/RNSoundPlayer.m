@@ -23,13 +23,13 @@ RCT_EXPORT_METHOD(loadUrl:(NSString *)url streamType:(NSString *)streamType) {
     [self prepareUrl:url];
 }
 
-RCT_EXPORT_METHOD(playSoundFile:(NSString *)name ofType:(NSString *)type streamType:(NSString *)streamType) {
-    [self mountSoundFile:name ofType:type];
+RCT_EXPORT_METHOD(playSoundFile:(NSString *)name ofType:(NSString *)type numberofLoops:(NSInteger)numberofLoops streamType:(NSString *)streamType) {
+    [self mountSoundFile:name ofType:type numberofLoops:numberofLoops];
     [self.player play];
 }
 
-RCT_EXPORT_METHOD(loadSoundFile:(NSString *)name ofType:(NSString *)type streamType:(NSString *)streamType) {
-    [self mountSoundFile:name ofType:type];
+RCT_EXPORT_METHOD(loadSoundFile:(NSString *)name ofType:(NSString *)type numberofLoops:(NSInteger)numberofLoops streamType:(NSString *)streamType) {
+    [self mountSoundFile:name ofType:type numberofLoops:numberofLoops];
 }
 
 - (NSArray<NSString *> *)supportedEvents {
@@ -122,7 +122,7 @@ RCT_REMAP_METHOD(getInfo,
     [self sendEventWithName:EVENT_FINISHED_PLAYING body:@{@"success": [NSNumber numberWithBool:TRUE]}];
 }
 
-- (void) mountSoundFile:(NSString *)name ofType:(NSString *)type {
+- (void) mountSoundFile:(NSString *)name ofType:(NSString *)type numberofLoops:(NSInteger)numberofLoops {
     if (self.avPlayer) {
         self.avPlayer = nil;
     }
@@ -137,11 +137,13 @@ RCT_REMAP_METHOD(getInfo,
 
     NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
     self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:soundFileURL error:nil];
-    [self.player setDelegate:self];
-    [self.player setNumberOfLoops:0];
-    [self.player prepareToPlay];
-    [self sendEventWithName:EVENT_FINISHED_LOADING body:@{@"success": [NSNumber numberWithBool:true]}];
-    [self sendEventWithName:EVENT_FINISHED_LOADING_FILE body:@{@"success": [NSNumber numberWithBool:true], @"name": name, @"type": type}];
+    if (self.player != nil) {
+        [self.player setDelegate:self];
+        [self.player setNumberOfLoops:numberofLoops];
+        [self.player prepareToPlay];
+        [self sendEventWithName:EVENT_FINISHED_LOADING body:@{@"success": [NSNumber numberWithBool:true]}];
+        [self sendEventWithName:EVENT_FINISHED_LOADING_FILE body:@{@"success": [NSNumber numberWithBool:true], @"name": name, @"type": type}];
+    }
 }
 
 - (void) prepareUrl:(NSString *)url {

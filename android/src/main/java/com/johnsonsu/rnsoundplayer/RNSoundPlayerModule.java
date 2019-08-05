@@ -50,6 +50,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 
   private final ReactApplicationContext reactContext;
   private MediaPlayer mediaPlayer;
+  private int numberOfPlays;
 
   public RNSoundPlayerModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -62,14 +63,14 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void playSoundFile(String name, String type, String streamType) throws IOException {
-    mountSoundFile(name, type, streamType);
+  public void playSoundFile(String name, String type, int numberOfLoops, String streamType) throws IOException {
+    mountSoundFile(name, type, numberOfLoops, streamType);
     this.mediaPlayer.start();
   }
 
   @ReactMethod
-  public void loadSoundFile(String name, String type, String streamType) throws IOException {
-    mountSoundFile(name, type, streamType);
+  public void loadSoundFile(String name, String type, int numberOfLoops, String streamType) throws IOException {
+    mountSoundFile(name, type, numberOfLoops, streamType);
   }
 
   @ReactMethod
@@ -135,7 +136,9 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
         .emit(eventName, params);
   }
 
-  private void mountSoundFile(String name, String type, String streamType) throws IOException {
+  private void mountSoundFile(String name, String type, int numberOfLoops, String streamType) throws IOException {
+    this.numberOfPlays = 0;
+    
     if (this.mediaPlayer == null) {
       int soundResID = getReactApplicationContext().getResources().getIdentifier(name, "raw", getReactApplicationContext().getPackageName());
 
@@ -152,6 +155,11 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
             WritableMap params = Arguments.createMap();
             params.putBoolean("success", true);
             sendEvent(getReactApplicationContext(), EVENT_FINISHED_PLAYING, params);
+
+            numberOfPlays += 1;
+            if (mediaPlayer.isLooping() && numberOfPlays < numberOfLoops) {
+              mediaPlayer.setLooping(false);
+            }
           }
       });
     } else {
@@ -168,6 +176,12 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
       this.mediaPlayer.setDataSource(getCurrentActivity(), uri);
       this.mediaPlayer.prepare();
       this.applyStreamType(StreamType.fromString(streamType));
+    }
+
+    if (numberOfLoops < 0) {
+      this.mediaPlayer.setLooping(true); // infinite
+    } else if (numberOfLoops > 1) {
+      this.mediaPlayer.setLooping(true);
     }
 
     WritableMap params = Arguments.createMap();
