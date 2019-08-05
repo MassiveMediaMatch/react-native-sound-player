@@ -46,6 +46,10 @@ const SoundPlayer = {
 		return RNSoundPlayer.stop()
 	},
 
+	seek: async (seconds: number): Promise<boolean> => {
+		return RNSoundPlayer.seek(seconds)
+	},
+
 	getInfo: async () => RNSoundPlayer.getInfo(),
 
 	unmount: () => {

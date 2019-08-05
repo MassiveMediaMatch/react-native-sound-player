@@ -43,6 +43,9 @@ const SoundPlayer = {
     stop: () => __awaiter(this, void 0, void 0, function* () {
         return RNSoundPlayer.stop();
     }),
+    seek: (seconds) => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.seek(seconds);
+    }),
     getInfo: () => __awaiter(this, void 0, void 0, function* () { return RNSoundPlayer.getInfo(); }),
     unmount: () => {
         _finishedPlayingListener && _finishedPlayingListener.remove();

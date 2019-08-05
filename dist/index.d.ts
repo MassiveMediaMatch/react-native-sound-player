@@ -11,6 +11,7 @@ declare const SoundPlayer: {
     pause: () => Promise<boolean>;
     resume: () => Promise<boolean>;
     stop: () => Promise<boolean>;
+    seek: (seconds: number) => Promise<boolean>;
     getInfo: () => Promise<any>;
     unmount: () => void;
 };
