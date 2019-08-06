@@ -20,6 +20,7 @@ import com.facebook.react.bridge.Promise;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.os.Build;
+import android.content.res.AssetFileDescriptor;
 
 enum StreamType {
   RINGTONE("RINGTONE"),
@@ -164,7 +165,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
         .emit(eventName, params);
   }
 
-  private void mountSoundFile(String name, String type, int numberOfLoops, String streamType, Promise promise) throws IOException {
+  private void mountSoundFile(String name, String type, final int numberOfLoops, String streamType, Promise promise) {
     try {
       this.numberOfPlays = 0;
       
@@ -241,7 +242,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
     return Uri.parse("file://" + folder + "/" + file);
   }
 
-  private void prepareUrl(String url, String streamType, Promise promise) throws IOException {
+  private void prepareUrl(String url, String streamType, Promise promise) {
     try {
       if (this.mediaPlayer == null) {
         Uri uri = Uri.parse(url);
