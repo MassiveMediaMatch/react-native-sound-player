@@ -65,24 +65,22 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void playSoundFile(String name, String type, int numberOfLoops, String streamType, Promise promise) {
-    mountSoundFile(name, type, numberOfLoops, streamType, promise);
-    this.mediaPlayer.start();
+    mountSoundFile(name, type, numberOfLoops, streamType, true, promise);
   }
 
   @ReactMethod
   public void loadSoundFile(String name, String type, int numberOfLoops, String streamType, Promise promise) {
-    mountSoundFile(name, type, numberOfLoops, streamType, promise);
+    mountSoundFile(name, type, numberOfLoops, streamType, false, promise);
   }
 
   @ReactMethod
   public void playUrl(String url, String streamType, Promise promise) {
-    prepareUrl(url, streamType, promise);
-    this.mediaPlayer.start();
+    prepareUrl(url, streamType, true, promise);
   }
 
   @ReactMethod
   public void loadUrl(String url, String streamType, Promise promise) {
-    prepareUrl(url, streamType, promise);
+    prepareUrl(url, streamType, false, promise);
   }
 
   @ReactMethod
@@ -165,7 +163,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
         .emit(eventName, params);
   }
 
-  private void mountSoundFile(String name, String type, final int numberOfLoops, String streamType, Promise promise) {
+  private void mountSoundFile(String name, String type, final int numberOfLoops, String streamType, final boolean playFile, Promise promise) {
     try {
       this.numberOfPlays = 0;
       
@@ -187,8 +185,8 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
         });
       } else {
         this.mediaPlayer.reset();
-        this.mediaPlayer.prepare();
       }
+
       this.applyStreamType(StreamType.fromString(streamType));
       if (name.contains("/assets/")) {
         String fileName = name.replace("/assets/", "") + '.' + type;
@@ -204,6 +202,16 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
       } else if (numberOfLoops > 1) {
         this.mediaPlayer.setLooping(true);
       }
+
+      this.mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+          if (playFile) {
+            RNSoundPlayerModule.this.mediaPlayer.start();
+          }
+        }
+      });
+      this.mediaPlayer.prepareAsync();
 
       WritableMap params = Arguments.createMap();
       params.putBoolean("success", true);
@@ -242,7 +250,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
     return Uri.parse("file://" + folder + "/" + file);
   }
 
-  private void prepareUrl(String url, String streamType, Promise promise) {
+  private void prepareUrl(String url, String streamType, final boolean playFile, Promise promise) {
     try {
       if (this.mediaPlayer == null) {
         Uri uri = Uri.parse(url);
@@ -260,9 +268,19 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
         Uri uri = Uri.parse(url);
         this.mediaPlayer.reset();
         this.mediaPlayer.setDataSource(getCurrentActivity(), uri);
-        this.mediaPlayer.prepare();
         this.applyStreamType(StreamType.fromString(streamType));
       }
+
+      this.mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+          if (playFile) {
+            RNSoundPlayerModule.this.mediaPlayer.start();
+          }
+        }
+      });
+      this.mediaPlayer.prepareAsync();
+
       WritableMap params = Arguments.createMap();
       params.putBoolean("success", true);
       sendEvent(getReactApplicationContext(), EVENT_FINISHED_LOADING, params);
