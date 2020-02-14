@@ -91,4 +91,22 @@ fastlane/test_output
 
 iOSInjectionProject/
 
-android/
+android/*.iml
+
+android/gradle*
+
+android/local.properties
+
+android/.idea/
+
+android/.gradle
+
+android/gradle
+
+android/.DS_Store
+
+android/build
+
+android/captures
+
+android/.externalNativeBuild

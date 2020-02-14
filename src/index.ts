@@ -11,20 +11,20 @@ const _soundPlayerEmitter: NativeEventEmitter = new NativeEventEmitter(RNSoundPl
 let _finishedPlayingListener: EmitterSubscription | null = null
 
 const SoundPlayer = {
-	playSoundFile: async (name: string, type: string, numberOfLoops: number, streamType: StreamType): Promise<void> => {
-		return RNSoundPlayer.playSoundFile(name, type, numberOfLoops, streamType)
+	playSoundFile: async (id: number, name: string, type: string, numberOfLoops: number, streamType: StreamType): Promise<void> => {
+		return RNSoundPlayer.playSoundFile(id, name, type, numberOfLoops, streamType)
 	},
 	
-	playUrl: async (url: string, streamType: StreamType): Promise<void> => {
-		return RNSoundPlayer.playUrl(url, streamType)
+	playUrl: async (id: number, url: string, streamType: StreamType): Promise<void> => {
+		return RNSoundPlayer.playUrl(id, url, streamType)
 	},
 
-	loadSoundFile: async (name: string, type: string, numberOfLoops: number, streamType: StreamType): Promise<void> => {
-		return RNSoundPlayer.loadSoundFile(name, type, numberOfLoops, streamType)
+	loadSoundFile: async (id: number, name: string, type: string, numberOfLoops: number, streamType: StreamType): Promise<void> => {
+		return RNSoundPlayer.loadSoundFile(id, name, type, numberOfLoops, streamType)
 	},
 	
-	loadUrl: async (url: string, streamType: StreamType): Promise<void> => {
-		return RNSoundPlayer.loadUrl(url, streamType)
+	loadUrl: async (id: number, url: string, streamType: StreamType): Promise<void> => {
+		return RNSoundPlayer.loadUrl(id, url, streamType)
 	},
 	
 	onFinishedPlaying: (callback: (success: boolean) => any) => {
@@ -48,23 +48,23 @@ const SoundPlayer = {
 		)
 	},
 	
-	pause: async (): Promise<boolean> => {
-		return RNSoundPlayer.pause()
+	pause: async (id: number): Promise<boolean> => {
+		return RNSoundPlayer.pause(id)
 	},
 
-	resume: async (): Promise<boolean> => {
-		return RNSoundPlayer.resume()
+	resume: async (id: number): Promise<boolean> => {
+		return RNSoundPlayer.resume(id)
 	},
 
-	stop: async (): Promise<boolean> => {
-		return RNSoundPlayer.stop()
+	stop: async (id: number): Promise<boolean> => {
+		return RNSoundPlayer.stop(id)
 	},
 
-	seek: async (seconds: number): Promise<boolean> => {
-		return RNSoundPlayer.seek(seconds)
+	seek: async (id: number, seconds: number): Promise<boolean> => {
+		return RNSoundPlayer.seek(id, seconds)
 	},
 
-	getInfo: async () => RNSoundPlayer.getInfo(),
+	getInfo: async (id: number) => RNSoundPlayer.getInfo(id),
 
 	unmount: () => {
 		_finishedPlayingListener && _finishedPlayingListener.remove()
