@@ -3,18 +3,18 @@ declare enum StreamType {
     MEDIA = "MEDIA"
 }
 declare const SoundPlayer: {
-    playSoundFile: (name: string, type: string, numberOfLoops: number, streamType: StreamType) => Promise<void>;
-    playUrl: (url: string, streamType: StreamType) => Promise<void>;
-    loadSoundFile: (name: string, type: string, numberOfLoops: number, streamType: StreamType) => Promise<void>;
-    loadUrl: (url: string, streamType: StreamType) => Promise<void>;
+    playSoundFile: (id: number, name: string, numberOfLoops: number, streamType: StreamType) => Promise<void>;
+    playUrl: (id: number, url: string, streamType: StreamType) => Promise<void>;
+    loadSoundFile: (id: number, name: string, type: string, numberOfLoops: number, streamType: StreamType) => Promise<void>;
+    loadUrl: (id: number, url: string, streamType: StreamType) => Promise<void>;
     onFinishedPlaying: (callback: (success: boolean) => any) => void;
     onFinishedLoading: (callback: (success: boolean) => any) => void;
     onFinishedLoadingURL: (callback: (success: boolean) => any) => void;
-    pause: () => Promise<boolean>;
-    resume: () => Promise<boolean>;
-    stop: () => Promise<boolean>;
-    seek: (seconds: number) => Promise<boolean>;
-    getInfo: () => Promise<any>;
+    pause: (id: number) => Promise<boolean>;
+    resume: (id: number) => Promise<boolean>;
+    stop: (id: number) => Promise<boolean>;
+    seek: (id: number, seconds: number) => Promise<boolean>;
+    getInfo: (id: number) => Promise<any>;
     unmount: () => void;
 };
 export { StreamType };

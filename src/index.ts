@@ -11,10 +11,10 @@ const _soundPlayerEmitter: NativeEventEmitter = new NativeEventEmitter(RNSoundPl
 let _finishedPlayingListener: EmitterSubscription | null = null
 
 const SoundPlayer = {
-	playSoundFile: async (id: number, name: string, type: string, numberOfLoops: number, streamType: StreamType): Promise<void> => {
-		return RNSoundPlayer.playSoundFile(id, name, type, numberOfLoops, streamType)
+	playSoundFile: async (id: number, name: string, numberOfLoops: number, streamType: StreamType): Promise<void> => {
+		return RNSoundPlayer.playSoundFile(id, name, numberOfLoops, streamType)
 	},
-	
+
 	playUrl: async (id: number, url: string, streamType: StreamType): Promise<void> => {
 		return RNSoundPlayer.playUrl(id, url, streamType)
 	},
@@ -22,32 +22,32 @@ const SoundPlayer = {
 	loadSoundFile: async (id: number, name: string, type: string, numberOfLoops: number, streamType: StreamType): Promise<void> => {
 		return RNSoundPlayer.loadSoundFile(id, name, type, numberOfLoops, streamType)
 	},
-	
+
 	loadUrl: async (id: number, url: string, streamType: StreamType): Promise<void> => {
 		return RNSoundPlayer.loadUrl(id, url, streamType)
 	},
-	
+
 	onFinishedPlaying: (callback: (success: boolean) => any) => {
 		_finishedPlayingListener = _soundPlayerEmitter.addListener(
-		  'FinishedPlaying',
-		  callback
+			'FinishedPlaying',
+			callback
 		)
 	},
 
 	onFinishedLoading: (callback: (success: boolean) => any) => {
 		_finishedPlayingListener = _soundPlayerEmitter.addListener(
-		  'FinishedLoading',
-		  callback
+			'FinishedLoading',
+			callback
 		)
 	},
 
 	onFinishedLoadingURL: (callback: (success: boolean) => any) => {
 		_finishedPlayingListener = _soundPlayerEmitter.addListener(
-		  'FinishedLoadingURL',
-		  callback
+			'FinishedLoadingURL',
+			callback
 		)
 	},
-	
+
 	pause: async (id: number): Promise<boolean> => {
 		return RNSoundPlayer.pause(id)
 	},

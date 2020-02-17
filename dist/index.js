@@ -19,17 +19,17 @@ const { RNSoundPlayer } = react_native_1.NativeModules;
 const _soundPlayerEmitter = new react_native_1.NativeEventEmitter(RNSoundPlayer);
 let _finishedPlayingListener = null;
 const SoundPlayer = {
-    playSoundFile: (name, type, numberOfLoops, streamType) => __awaiter(this, void 0, void 0, function* () {
-        return RNSoundPlayer.playSoundFile(name, type, numberOfLoops, streamType);
+    playSoundFile: (id, name, numberOfLoops, streamType) => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.playSoundFile(id, name, numberOfLoops, streamType);
     }),
-    playUrl: (url, streamType) => __awaiter(this, void 0, void 0, function* () {
-        return RNSoundPlayer.playUrl(url, streamType);
+    playUrl: (id, url, streamType) => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.playUrl(id, url, streamType);
     }),
-    loadSoundFile: (name, type, numberOfLoops, streamType) => __awaiter(this, void 0, void 0, function* () {
-        return RNSoundPlayer.loadSoundFile(name, type, numberOfLoops, streamType);
+    loadSoundFile: (id, name, type, numberOfLoops, streamType) => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.loadSoundFile(id, name, type, numberOfLoops, streamType);
     }),
-    loadUrl: (url, streamType) => __awaiter(this, void 0, void 0, function* () {
-        return RNSoundPlayer.loadUrl(url, streamType);
+    loadUrl: (id, url, streamType) => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.loadUrl(id, url, streamType);
     }),
     onFinishedPlaying: (callback) => {
         _finishedPlayingListener = _soundPlayerEmitter.addListener('FinishedPlaying', callback);
@@ -40,19 +40,19 @@ const SoundPlayer = {
     onFinishedLoadingURL: (callback) => {
         _finishedPlayingListener = _soundPlayerEmitter.addListener('FinishedLoadingURL', callback);
     },
-    pause: () => __awaiter(this, void 0, void 0, function* () {
-        return RNSoundPlayer.pause();
+    pause: (id) => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.pause(id);
     }),
-    resume: () => __awaiter(this, void 0, void 0, function* () {
-        return RNSoundPlayer.resume();
+    resume: (id) => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.resume(id);
     }),
-    stop: () => __awaiter(this, void 0, void 0, function* () {
-        return RNSoundPlayer.stop();
+    stop: (id) => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.stop(id);
     }),
-    seek: (seconds) => __awaiter(this, void 0, void 0, function* () {
-        return RNSoundPlayer.seek(seconds);
+    seek: (id, seconds) => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.seek(id, seconds);
     }),
-    getInfo: () => __awaiter(this, void 0, void 0, function* () { return RNSoundPlayer.getInfo(); }),
+    getInfo: (id) => __awaiter(this, void 0, void 0, function* () { return RNSoundPlayer.getInfo(id); }),
     unmount: () => {
         _finishedPlayingListener && _finishedPlayingListener.remove();
     }
