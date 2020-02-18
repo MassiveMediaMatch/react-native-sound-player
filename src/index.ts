@@ -13,19 +13,19 @@ let _finishedPlayingListener: EmitterSubscription | null = null
 
 const SoundPlayer = {
 	playSoundFile: async (id: string, name: string, numberOfLoops: number, streamType: StreamType, volume: number): Promise<void> => {
-		return RNSoundPlayer.playSoundFile(id, name, numberOfLoops, streamType)
+		return RNSoundPlayer.playSoundFile(id, name, numberOfLoops, streamType, volume)
 	},
 
 	playUrl: async (id: string, url: string, streamType: StreamType, volume: number): Promise<void> => {
-		return RNSoundPlayer.playUrl(id, url, streamType)
+		return RNSoundPlayer.playUrl(id, url, streamType, volume)
 	},
 
 	loadSoundFile: async (id: string, name: string, numberOfLoops: number, streamType: StreamType, volume: number): Promise<void> => {
-		return RNSoundPlayer.loadSoundFile(id, name, numberOfLoops, streamType)
+		return RNSoundPlayer.loadSoundFile(id, name, numberOfLoops, streamType, volume)
 	},
 
 	loadUrl: async (id: string, url: string, streamType: StreamType, volume: number): Promise<void> => {
-		return RNSoundPlayer.loadUrl(id, url, streamType)
+		return RNSoundPlayer.loadUrl(id, url, streamType, volume)
 	},
 
 	onFinishedPlaying: (callback: (id: string, success: boolean) => any): void => {
