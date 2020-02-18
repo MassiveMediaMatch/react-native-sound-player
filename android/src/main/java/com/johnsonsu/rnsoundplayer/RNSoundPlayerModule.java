@@ -29,20 +29,19 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void playSoundFile(final int id, String name, int numberOfLoops, String streamType, Promise promise) {
+	public void playSoundFile(final String id, String name, int numberOfLoops, String streamType, Promise promise) {
 		try {
-			final MediaPlayer player = pool.loadSound(getReactApplicationContext(), id, name, StreamType.fromString(streamType), numberOfLoops);
-			player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-				@Override
-				public void onPrepared(MediaPlayer mp) {
-					player.start();
-					sendEventFinishedLoading(id);
-				}
-			});
+			final MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, name, StreamType.fromString(streamType), numberOfLoops);
 			player.setOnCompletionListener(new MediaPlayerPool.OnCompletionListener(pool, id) {
 				@Override
-				public void onCompletion() {
+				public void onComplete() {
 					sendEventFinishedPlaying(id);
+				}
+			});
+			player.setOnPreparedListener(new MediaPlayerPool.OnPreparedListener(true) {
+				@Override
+				public void onPrepared() {
+					sendEventFinishedLoading(id);
 				}
 			});
 			promise.resolve(null);
@@ -52,34 +51,12 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void loadSoundFile(final int id, String name, int numberOfLoops, String streamType, Promise promise) {
+	public void loadSoundFile(final String id, String name, int numberOfLoops, String streamType, Promise promise) {
 		try {
-			MediaPlayer player = pool.loadSound(getReactApplicationContext(), id, name, StreamType.fromString(streamType), numberOfLoops);
-			player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-				@Override
-				public void onPrepared(MediaPlayer mp) {
-					sendEventFinishedLoading(id);
-				}
-			});
-		} catch (Exception e) {
-			promise.reject(e);
-		}
-	}
-
-	@ReactMethod
-	public void playUrl(final int id, final String url, String streamType, Promise promise) {
-		try {
-			final MediaPlayer player = pool.loadSound(getReactApplicationContext(), id, url, StreamType.fromString(streamType), 0);
-			player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-				@Override
-				public void onPrepared(MediaPlayer mp) {
-					player.start();
-					sendEventFinishedLoadingUrl(id, url);
-				}
-			});
+			MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, name, StreamType.fromString(streamType), numberOfLoops);
 			player.setOnCompletionListener(new MediaPlayerPool.OnCompletionListener(pool, id) {
 				@Override
-				public void onCompletion() {
+				public void onComplete() {
 					sendEventFinishedPlaying(id);
 				}
 			});
@@ -89,9 +66,30 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void loadUrl(final int id, final String url, String streamType, Promise promise) {
+	public void playUrl(final String id, final String url, String streamType, Promise promise) {
 		try {
-			MediaPlayer player = pool.loadSound(getReactApplicationContext(), id, url, StreamType.fromString(streamType), 0);
+			final MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, url, StreamType.fromString(streamType), 0);
+			player.setOnCompletionListener(new MediaPlayerPool.OnCompletionListener(pool, id) {
+				@Override
+				public void onComplete() {
+					sendEventFinishedPlaying(id);
+				}
+			});
+			player.setOnPreparedListener(new MediaPlayerPool.OnPreparedListener(true) {
+				@Override
+				public void onPrepared() {
+					sendEventFinishedLoadingUrl(id, url);
+				}
+			});
+		} catch (Exception e) {
+			promise.reject(e);
+		}
+	}
+
+	@ReactMethod
+	public void loadUrl(final String id, final String url, String streamType, Promise promise) {
+		try {
+			MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, url, StreamType.fromString(streamType), 0);
 			player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 				@Override
 				public void onPrepared(MediaPlayer mp) {
@@ -104,7 +102,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void pause(int id, Promise promise) {
+	public void pause(final String id, Promise promise) {
 		if (pool.pause(id)) {
 			promise.resolve(true);
 		} else {
@@ -113,7 +111,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void resume(int id, Promise promise) {
+	public void resume(final String id, Promise promise) {
 		if (pool.resume(id)) {
 			promise.resolve(true);
 		} else {
@@ -122,7 +120,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void stop(int id, Promise promise) {
+	public void stop(final String id, Promise promise) {
 		if (pool.stop(id)) {
 			promise.resolve(true);
 		} else {
@@ -131,7 +129,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void seek(int id, float seconds, Promise promise) {
+	public void seek(final String id, float seconds, Promise promise) {
 		if (pool.seek(id, seconds)) {
 			promise.resolve(true);
 		} else {
@@ -140,37 +138,43 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void setVolume(int id, float volume) {
+	public void setVolume(final String id, float volume) {
 		pool.setVolume(id, volume);
 	}
 
 	@ReactMethod
-	public void getInfo(int id, Promise promise) {
+	public void getInfo(final String id, Promise promise) {
 		WritableMap map = Arguments.createMap();
 		map.putDouble("currentTime", pool.getPosition(id));
 		map.putDouble("duration", pool.getDuration(id));
 		promise.resolve(map);
 	}
 
-	private void sendEventFinishedPlaying(int id) {
+	@ReactMethod
+	public void stopAllSounds(Promise promise) {
+		pool.stopAll();
+		promise.resolve(null);
+	}
+
+	private void sendEventFinishedPlaying(final String id) {
 		WritableMap params = Arguments.createMap();
 		params.putBoolean("success", true);
-		params.putInt("id", id);
+		params.putString("id", id);
 		getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EVENT_FINISHED_PLAYING, params);
 	}
 
-	private void sendEventFinishedLoading(int id) {
+	private void sendEventFinishedLoading(final String id) {
 		WritableMap params = Arguments.createMap();
 		params.putBoolean("success", true);
-		params.putInt("id", id);
+		params.putString("id", id);
 		getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EVENT_FINISHED_LOADING, params);
 	}
 
-	private void sendEventFinishedLoadingUrl(int id, String url) {
+	private void sendEventFinishedLoadingUrl(final String id, String url) {
 		WritableMap params = Arguments.createMap();
 		params.putBoolean("success", true);
 		params.putString("url", url);
-		params.putInt("id", id);
+		params.putString("id", id);
 		getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EVENT_FINISHED_LOADING_URL, params);
 	}
 
