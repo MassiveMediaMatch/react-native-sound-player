@@ -29,9 +29,9 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void playSoundFile(final String id, String name, int numberOfLoops, String streamType, Promise promise) {
+	public void playSoundFile(final String id, String name, int numberOfLoops, String streamType, int volume, Promise promise) {
 		try {
-			final MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, name, StreamType.fromString(streamType), numberOfLoops);
+			final MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, name, StreamType.fromString(streamType), numberOfLoops, volume);
 			player.setOnCompletionListener(new MediaPlayerPool.OnCompletionListener(pool, id) {
 				@Override
 				public void onComplete() {
@@ -51,9 +51,9 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void loadSoundFile(final String id, String name, int numberOfLoops, String streamType, Promise promise) {
+	public void loadSoundFile(final String id, String name, int numberOfLoops, String streamType, int volume, Promise promise) {
 		try {
-			MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, name, StreamType.fromString(streamType), numberOfLoops);
+			MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, name, StreamType.fromString(streamType), numberOfLoops, volume);
 			player.setOnCompletionListener(new MediaPlayerPool.OnCompletionListener(pool, id) {
 				@Override
 				public void onComplete() {
@@ -66,9 +66,9 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void playUrl(final String id, final String url, String streamType, Promise promise) {
+	public void playUrl(final String id, final String url, String streamType, int volume, Promise promise) {
 		try {
-			final MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, url, StreamType.fromString(streamType), 0);
+			final MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, url, StreamType.fromString(streamType), 0, volume);
 			player.setOnCompletionListener(new MediaPlayerPool.OnCompletionListener(pool, id) {
 				@Override
 				public void onComplete() {
@@ -87,9 +87,9 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void loadUrl(final String id, final String url, String streamType, Promise promise) {
+	public void loadUrl(final String id, final String url, String streamType, int volume, Promise promise) {
 		try {
-			MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, url, StreamType.fromString(streamType), 0);
+			MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, url, StreamType.fromString(streamType), 0, volume);
 			player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 				@Override
 				public void onPrepared(MediaPlayer mp) {

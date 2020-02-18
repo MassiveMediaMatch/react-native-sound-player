@@ -12,19 +12,19 @@ const _soundPlayerEmitter: NativeEventEmitter = new NativeEventEmitter(RNSoundPl
 let _finishedPlayingListener: EmitterSubscription | null = null
 
 const SoundPlayer = {
-	playSoundFile: async (id: string, name: string, numberOfLoops: number, streamType: StreamType): Promise<void> => {
+	playSoundFile: async (id: string, name: string, numberOfLoops: number, streamType: StreamType, volume: number): Promise<void> => {
 		return RNSoundPlayer.playSoundFile(id, name, numberOfLoops, streamType)
 	},
 
-	playUrl: async (id: string, url: string, streamType: StreamType): Promise<void> => {
+	playUrl: async (id: string, url: string, streamType: StreamType, volume: number): Promise<void> => {
 		return RNSoundPlayer.playUrl(id, url, streamType)
 	},
 
-	loadSoundFile: async (id: string, name: string, numberOfLoops: number, streamType: StreamType): Promise<void> => {
+	loadSoundFile: async (id: string, name: string, numberOfLoops: number, streamType: StreamType, volume: number): Promise<void> => {
 		return RNSoundPlayer.loadSoundFile(id, name, numberOfLoops, streamType)
 	},
 
-	loadUrl: async (id: string, url: string, streamType: StreamType): Promise<void> => {
+	loadUrl: async (id: string, url: string, streamType: StreamType, volume: number): Promise<void> => {
 		return RNSoundPlayer.loadUrl(id, url, streamType)
 	},
 
@@ -64,6 +64,10 @@ const SoundPlayer = {
 	stopAllSounds: async (): Promise<void> => {
 		return RNSoundPlayer.stopAllSounds()
 	},
+
+	setVolume: async (id: string, volume: number): Promise<void> => {
+        return RNSoundPlayer.stopAllSounds()
+    },
 
 	seek: async (id: string, seconds: number): Promise<boolean> => {
 		return RNSoundPlayer.seek(id, seconds)

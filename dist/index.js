@@ -20,16 +20,16 @@ const { RNSoundPlayer } = react_native_1.NativeModules;
 const _soundPlayerEmitter = new react_native_1.NativeEventEmitter(RNSoundPlayer);
 let _finishedPlayingListener = null;
 const SoundPlayer = {
-    playSoundFile: (id, name, numberOfLoops, streamType) => __awaiter(this, void 0, void 0, function* () {
+    playSoundFile: (id, name, numberOfLoops, streamType, volume) => __awaiter(this, void 0, void 0, function* () {
         return RNSoundPlayer.playSoundFile(id, name, numberOfLoops, streamType);
     }),
-    playUrl: (id, url, streamType) => __awaiter(this, void 0, void 0, function* () {
+    playUrl: (id, url, streamType, volume) => __awaiter(this, void 0, void 0, function* () {
         return RNSoundPlayer.playUrl(id, url, streamType);
     }),
-    loadSoundFile: (id, name, numberOfLoops, streamType) => __awaiter(this, void 0, void 0, function* () {
+    loadSoundFile: (id, name, numberOfLoops, streamType, volume) => __awaiter(this, void 0, void 0, function* () {
         return RNSoundPlayer.loadSoundFile(id, name, numberOfLoops, streamType);
     }),
-    loadUrl: (id, url, streamType) => __awaiter(this, void 0, void 0, function* () {
+    loadUrl: (id, url, streamType, volume) => __awaiter(this, void 0, void 0, function* () {
         return RNSoundPlayer.loadUrl(id, url, streamType);
     }),
     onFinishedPlaying: (callback) => {
@@ -51,6 +51,9 @@ const SoundPlayer = {
         return RNSoundPlayer.stop(id);
     }),
     stopAllSounds: () => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.stopAllSounds();
+    }),
+    setVolume: (id, volume) => __awaiter(this, void 0, void 0, function* () {
         return RNSoundPlayer.stopAllSounds();
     }),
     seek: (id, seconds) => __awaiter(this, void 0, void 0, function* () {

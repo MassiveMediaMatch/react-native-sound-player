@@ -113,7 +113,7 @@ public class MediaPlayerPool {
 		players.clear();
 	}
 
-	public MediaPlayer prepareSound(Context context, final String id, String uri, StreamType streamType, int numberOfLoops) throws IOException {
+	public MediaPlayer prepareSound(Context context, final String id, String uri, StreamType streamType, int numberOfLoops, int volume) throws IOException {
 		// get instance
 		MediaPlayer player;
 		loops.put(id, 0);
@@ -141,6 +141,7 @@ public class MediaPlayerPool {
 				player.setDataSource(context, Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + uri));
 			}
 		}
+		player.setVolume(volume, volume);
 		this.applyStreamType(player, streamType);
 		player.prepare();
 		return player;
