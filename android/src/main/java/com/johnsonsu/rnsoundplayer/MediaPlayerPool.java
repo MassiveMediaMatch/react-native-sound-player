@@ -150,7 +150,7 @@ public class MediaPlayerPool {
 		switch (streamType) {
 			case RINGTONE:
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-					AudioAttributes audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).setLegacyStreamType(AudioManager.STREAM_MUSIC).build();
+					AudioAttributes audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE).setLegacyStreamType(AudioManager.STREAM_RING).build();
 					player.setAudioAttributes(audioAttributes);
 				} else {
 					player.setAudioStreamType(AudioManager.STREAM_RING);
