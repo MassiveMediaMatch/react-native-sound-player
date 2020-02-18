@@ -3,6 +3,7 @@ import { NativeModules, NativeEventEmitter, EmitterSubscription } from 'react-na
 enum StreamType {
 	RINGTONE = 'RINGTONE',
 	MEDIA = 'MEDIA',
+	VOICE_CALL = 'VOICE_CALL',
 }
 
 const { RNSoundPlayer } = NativeModules

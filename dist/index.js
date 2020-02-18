@@ -13,6 +13,7 @@ var StreamType;
 (function (StreamType) {
     StreamType["RINGTONE"] = "RINGTONE";
     StreamType["MEDIA"] = "MEDIA";
+    StreamType["VOICE_CALL"] = "VOICE_CALL";
 })(StreamType || (StreamType = {}));
 exports.StreamType = StreamType;
 const { RNSoundPlayer } = react_native_1.NativeModules;
@@ -25,8 +26,8 @@ const SoundPlayer = {
     playUrl: (id, url, streamType) => __awaiter(this, void 0, void 0, function* () {
         return RNSoundPlayer.playUrl(id, url, streamType);
     }),
-    loadSoundFile: (id, name, type, numberOfLoops, streamType) => __awaiter(this, void 0, void 0, function* () {
-        return RNSoundPlayer.loadSoundFile(id, name, type, numberOfLoops, streamType);
+    loadSoundFile: (id, name, numberOfLoops, streamType) => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.loadSoundFile(id, name, numberOfLoops, streamType);
     }),
     loadUrl: (id, url, streamType) => __awaiter(this, void 0, void 0, function* () {
         return RNSoundPlayer.loadUrl(id, url, streamType);
@@ -58,6 +59,6 @@ const SoundPlayer = {
     getInfo: (id) => __awaiter(this, void 0, void 0, function* () { return RNSoundPlayer.getInfo(id); }),
     unmount: () => {
         _finishedPlayingListener && _finishedPlayingListener.remove();
-    }
+    },
 };
 exports.default = SoundPlayer;

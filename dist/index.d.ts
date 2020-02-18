@@ -1,11 +1,12 @@
 declare enum StreamType {
     RINGTONE = "RINGTONE",
-    MEDIA = "MEDIA"
+    MEDIA = "MEDIA",
+    VOICE_CALL = "VOICE_CALL"
 }
 declare const SoundPlayer: {
     playSoundFile: (id: string, name: string, numberOfLoops: number, streamType: StreamType) => Promise<void>;
     playUrl: (id: string, url: string, streamType: StreamType) => Promise<void>;
-    loadSoundFile: (id: string, name: string, type: string, numberOfLoops: number, streamType: StreamType) => Promise<void>;
+    loadSoundFile: (id: string, name: string, numberOfLoops: number, streamType: StreamType) => Promise<void>;
     loadUrl: (id: string, url: string, streamType: StreamType) => Promise<void>;
     onFinishedPlaying: (callback: (id: string, success: boolean) => any) => void;
     onFinishedLoading: (callback: (id: string, success: boolean) => any) => void;

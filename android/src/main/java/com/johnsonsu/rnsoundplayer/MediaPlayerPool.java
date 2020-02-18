@@ -156,13 +156,20 @@ public class MediaPlayerPool {
 					player.setAudioStreamType(AudioManager.STREAM_RING);
 				}
 				break;
-
 			case MEDIA:
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 					AudioAttributes audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).setLegacyStreamType(AudioManager.STREAM_MUSIC).build();
 					player.setAudioAttributes(audioAttributes);
 				} else {
 					player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+				}
+				break;
+			case VOICE_CALL:
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+					AudioAttributes audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).setLegacyStreamType(AudioManager.STREAM_VOICE_CALL).build();
+					player.setAudioAttributes(audioAttributes);
+				} else {
+					player.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
 				}
 				break;
 		}
