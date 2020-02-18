@@ -49,6 +49,9 @@ const SoundPlayer = {
     stop: (id) => __awaiter(this, void 0, void 0, function* () {
         return RNSoundPlayer.stop(id);
     }),
+    stopAllSounds: () => __awaiter(this, void 0, void 0, function* () {
+        return RNSoundPlayer.stopAllSounds();
+    }),
     seek: (id, seconds) => __awaiter(this, void 0, void 0, function* () {
         return RNSoundPlayer.seek(id, seconds);
     }),

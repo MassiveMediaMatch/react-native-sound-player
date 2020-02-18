@@ -3,18 +3,19 @@ declare enum StreamType {
     MEDIA = "MEDIA"
 }
 declare const SoundPlayer: {
-    playSoundFile: (id: number, name: string, numberOfLoops: number, streamType: StreamType) => Promise<void>;
-    playUrl: (id: number, url: string, streamType: StreamType) => Promise<void>;
-    loadSoundFile: (id: number, name: string, type: string, numberOfLoops: number, streamType: StreamType) => Promise<void>;
-    loadUrl: (id: number, url: string, streamType: StreamType) => Promise<void>;
-    onFinishedPlaying: (callback: (success: boolean) => any) => void;
-    onFinishedLoading: (callback: (success: boolean) => any) => void;
-    onFinishedLoadingURL: (callback: (success: boolean) => any) => void;
-    pause: (id: number) => Promise<boolean>;
-    resume: (id: number) => Promise<boolean>;
-    stop: (id: number) => Promise<boolean>;
-    seek: (id: number, seconds: number) => Promise<boolean>;
-    getInfo: (id: number) => Promise<any>;
+    playSoundFile: (id: string, name: string, numberOfLoops: number, streamType: StreamType) => Promise<void>;
+    playUrl: (id: string, url: string, streamType: StreamType) => Promise<void>;
+    loadSoundFile: (id: string, name: string, type: string, numberOfLoops: number, streamType: StreamType) => Promise<void>;
+    loadUrl: (id: string, url: string, streamType: StreamType) => Promise<void>;
+    onFinishedPlaying: (callback: (id: string, success: boolean) => any) => void;
+    onFinishedLoading: (callback: (id: string, success: boolean) => any) => void;
+    onFinishedLoadingURL: (callback: (id: string, success: boolean) => any) => void;
+    pause: (id: string) => Promise<boolean>;
+    resume: (id: string) => Promise<boolean>;
+    stop: (id: string) => Promise<boolean>;
+    stopAllSounds: () => Promise<void>;
+    seek: (id: string, seconds: number) => Promise<boolean>;
+    getInfo: (id: string) => Promise<any>;
     unmount: () => void;
 };
 export { StreamType };

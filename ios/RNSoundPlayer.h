@@ -9,6 +9,13 @@
 #import <React/RCTEventEmitter.h>
 
 @interface RNSoundPlayer : RCTEventEmitter <RCTBridgeModule, AVAudioPlayerDelegate>
-@property (nonatomic, strong) AVAudioPlayer *player;
-@property (nonatomic, strong) AVPlayer *avPlayer;
+
+@end
+
+
+#pragma mark - PlayerData
+
+@interface RNPlayerData : NSObject
+@property (nonatomic, strong) AVAudioPlayer *audioPlayer;
+@property (nonatomic, strong) AVPlayer *player;
 @end
