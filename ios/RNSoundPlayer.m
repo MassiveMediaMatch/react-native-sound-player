@@ -30,6 +30,7 @@ static NSString *const EVENT_FINISHED_PLAYING = @"FinishedPlaying";
 	{
 		self.players = [NSMutableDictionary new];
 		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioRouteChanged:) name:AVAudioSessionRouteChangeNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
 	}
 
@@ -40,12 +41,28 @@ static NSString *const EVENT_FINISHED_PLAYING = @"FinishedPlaying";
 {
 	[self.players removeAllObjects];
 	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:AVAudioSessionRouteChangeNotification object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
 }
 
 
 #pragma mark - private
 
+- (void)audioRouteChanged:(NSNotification*)notification
+{
+	AVAudioSessionRouteDescription *routeDescription = [notification.userInfo objectForKey:AVAudioSessionRouteChangePreviousRouteKey];
+	NSArray *outputs = routeDescription.outputs;
+	for (AVAudioSessionPortDescription *portDescription in outputs) {
+		// built in receiver
+		if (portDescription.portType == AVAudioSessionPortBuiltInReceiver) {
+			[self setSpeaker:NO];
+		}
+		// speaker
+		else if (portDescription.portType == AVAudioSessionPortBuiltInSpeaker) {
+			[self setSpeaker:YES];
+		}
+	}
+}
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
 {
@@ -184,6 +201,7 @@ RCT_EXPORT_METHOD(playSoundFile:(NSString *)soundId name:(NSString *)name number
 	}
 	
 	if (playerData.audioPlayer) {
+		[self setSpeaker:YES];
 		[playerData.audioPlayer setVolume:volume];
 		[playerData.audioPlayer play];
 	}
