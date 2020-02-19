@@ -10,6 +10,11 @@
 @property (nonatomic, strong) NSMutableDictionary *players;
 @property (nonatomic, strong) AVAudioPlayer *audioPlayer;
 @property (nonatomic, strong) AVPlayer *player;
+@property (nonatomic, assign) NSInteger numberOfPlayingSounds;
+
+@property (nonatomic, assign) AVAudioSessionCategory audioSessionCategory;
+@property (nonatomic, assign) AVAudioSessionMode audioSessionMode;
+@property (nonatomic, assign) AVAudioSessionCategoryOptions audioSessionCategoryOptions;
 @end
 
 
@@ -73,6 +78,7 @@ static NSString *const EVENT_FINISHED_PLAYING = @"FinishedPlaying";
 		[params setObject:soundId forKey:@"id"];
 	}
     [self sendEventWithName:EVENT_FINISHED_PLAYING body:[params copy]];
+	self.numberOfPlayingSounds--;
 }
 
 - (void)itemDidFinishPlaying:(NSNotification *)notification
@@ -84,6 +90,7 @@ static NSString *const EVENT_FINISHED_PLAYING = @"FinishedPlaying";
 //		[params setObject:soundId forKey:@"id"];
 //	}
     [self sendEventWithName:EVENT_FINISHED_PLAYING body:[params copy]];
+	self.numberOfPlayingSounds--;
 }
 
 - (void)setPlayerData:(RNPlayerData*)data withId:(NSString*)id
@@ -180,6 +187,7 @@ RCT_EXPORT_METHOD(playUrl:(NSString *)soundId url:(NSString *)url streamType:(NS
 	
 	if (playerData.player) {
 		[playerData.player play];
+		self.numberOfPlayingSounds++;
 	}
 }
 
@@ -204,6 +212,7 @@ RCT_EXPORT_METHOD(playSoundFile:(NSString *)soundId name:(NSString *)name number
 		[self setSpeaker:YES];
 		[playerData.audioPlayer setVolume:volume];
 		[playerData.audioPlayer play];
+		self.numberOfPlayingSounds++;
 	}
 }
 
@@ -233,9 +242,11 @@ RCT_EXPORT_METHOD(resume:(NSString*)soundId)
 	RNPlayerData *data = [self getPlayerDataForId:soundId];
     if (data.audioPlayer != nil) {
         [data.audioPlayer play];
+		self.numberOfPlayingSounds++;
     }
     if (data.player != nil) {
         [data.player play];
+		self.numberOfPlayingSounds++;
     }
 }
 
@@ -244,9 +255,11 @@ RCT_EXPORT_METHOD(stop:(NSString*)soundId)
     RNPlayerData *data = [self getPlayerDataForId:soundId];
     if (data.audioPlayer != nil) {
         [data.audioPlayer stop];
+		self.numberOfPlayingSounds--;
     }
     if (data.player != nil) {
         [data.player pause];
+		self.numberOfPlayingSounds--;
     }
 }
 
@@ -262,6 +275,7 @@ RCT_EXPORT_METHOD(stopAllSounds)
 		}
 	}
 	[self.players removeAllObjects];
+	self.numberOfPlayingSounds = 0;
 }
 
 RCT_EXPORT_METHOD(seek:(NSString*)soundId seconds:(float)seconds)
@@ -275,24 +289,52 @@ RCT_EXPORT_METHOD(seek:(NSString*)soundId seconds:(float)seconds)
     }
 }
 
+- (BOOL)setAudioSessionWithCategory:(AVAudioSessionCategory)category mode:(AVAudioSessionMode)mode options:(AVAudioSessionCategoryOptions)options
+{
+	if (self.audioSessionCategory == category && self.audioSessionMode == mode && self.audioSessionCategoryOptions == options) {
+//		return NO;
+	}
+	
+	NSError *error;
+	AVAudioSession *session = [AVAudioSession sharedInstance];
+	[session setCategory:category mode:mode options:options error:&error];
+	
+	self.audioSessionCategory = category;
+	self.audioSessionMode = mode;
+	self.audioSessionCategoryOptions = options;
+	
+	if (error) {
+		return NO;
+	} else {
+		return YES;
+	}
+}
+
+
 RCT_EXPORT_METHOD(setSpeaker:(BOOL) on)
 {
+	// if there is already a sound playing, do not interrupt
+	if (self.numberOfPlayingSounds > 0) {
+		return;
+	}
+	
     AVAudioSession *session = [AVAudioSession sharedInstance];
-	NSError *error;
     if (on)
 	{
-//        [session setCategory: AVAudioSessionCategoryPlayAndRecord error: nil];
-//        [session overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
-		
-		[session setCategory:AVAudioSessionCategoryPlayAndRecord mode:AVAudioSessionModeVoiceChat options:(AVAudioSessionCategoryOptionMixWithOthers & AVAudioSessionCategoryOptionAllowBluetooth) error:&error];
+		AVAudioSessionCategory category = AVAudioSessionCategoryPlayback;
+		AVAudioSessionMode mode = AVAudioSessionModeSpokenAudio;
+		AVAudioSessionCategoryOptions options = (AVAudioSessionCategoryOptionDefaultToSpeaker & AVAudioSessionCategoryOptionAllowBluetooth);
+		[self setAudioSessionWithCategory:category mode:mode options:options];
+
 		[session overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
     }
 	else
 	{
-//        [session setCategory: AVAudioSessionCategoryPlayback error: nil];
-//        [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
+		AVAudioSessionCategory category = AVAudioSessionCategoryPlayback;
+		AVAudioSessionMode mode = AVAudioSessionModeGameChat;
+		AVAudioSessionCategoryOptions options = (AVAudioSessionCategoryOptionMixWithOthers & AVAudioSessionCategoryOptionAllowBluetooth);
+		[self setAudioSessionWithCategory:category mode:mode options:options];
 		
-		[session setCategory:AVAudioSessionCategoryPlayback mode:AVAudioSessionModeVoiceChat options:(AVAudioSessionCategoryOptionMixWithOthers & AVAudioSessionCategoryOptionAllowBluetooth) error:&error];
 		[session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
     }
     [session setActive:true error:nil];
