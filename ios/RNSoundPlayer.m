@@ -95,7 +95,7 @@ static NSString *const EVENT_FINISHED_PLAYING = @"FinishedPlaying";
 	return nil;
 }
 
-- (RNPlayerData*)mountSoundFile:(NSString *)soundId name:(NSString *)name ofType:(NSString *)type numberofLoops:(NSInteger)numberofLoops
+- (RNPlayerData*)mountSoundFile:(NSString *)soundId name:(NSString *)name ofType:(NSString *)type numberofLoops:(NSInteger)numberofLoops volume:(CGFloat)volume
 {
     NSString *soundFilePath;
 
@@ -117,6 +117,7 @@ static NSString *const EVENT_FINISHED_PLAYING = @"FinishedPlaying";
 	{
         [audioPlayer setDelegate:self];
         [audioPlayer setNumberOfLoops:numberofLoops];
+		[audioPlayer setVolume:volume];
         [audioPlayer prepareToPlay];
 		[self sendEventWithName:EVENT_FINISHED_LOADING body:@{@"id": soundId, @"success": [NSNumber numberWithBool:true]}];
         [self sendEventWithName:EVENT_FINISHED_LOADING_FILE body:@{@"id": soundId, @"success": [NSNumber numberWithBool:true], @"name": name, @"type": type}];
@@ -129,10 +130,11 @@ static NSString *const EVENT_FINISHED_PLAYING = @"FinishedPlaying";
 	return data;
 }
 
-- (RNPlayerData*)prepareUrl:(NSString*)id url:(NSString *)url
+- (RNPlayerData*)prepareUrl:(NSString*)id url:(NSString *)url volume:(CGFloat)volume
 {
     NSURL *soundURL = [NSURL URLWithString:url];
     AVPlayer *avPlayer = [[AVPlayer alloc] initWithURL:soundURL];
+	[avPlayer setVolume:volume];
 //    [avPlayer prepareToPlay];
 	
 	RNPlayerData *data = [RNPlayerData new];
@@ -152,11 +154,11 @@ static NSString *const EVENT_FINISHED_PLAYING = @"FinishedPlaying";
     return @[EVENT_FINISHED_PLAYING, EVENT_FINISHED_LOADING, EVENT_FINISHED_LOADING_URL, EVENT_FINISHED_LOADING_FILE];
 }
 
-RCT_EXPORT_METHOD(playUrl:(NSString *)soundId url:(NSString *)url streamType:(NSString *)streamType)
+RCT_EXPORT_METHOD(playUrl:(NSString *)soundId url:(NSString *)url streamType:(NSString *)streamType volume:(CGFloat)volume)
 {
 	RNPlayerData *playerData = [self getPlayerDataForId:soundId];
 	if (!playerData) {
-		playerData = [self prepareUrl:soundId url:url];
+		playerData = [self prepareUrl:soundId url:url volume:volume];
 	}
 	
 	if (playerData.player) {
@@ -164,35 +166,36 @@ RCT_EXPORT_METHOD(playUrl:(NSString *)soundId url:(NSString *)url streamType:(NS
 	}
 }
 
-RCT_EXPORT_METHOD(loadUrl:(NSString *)soundId url:(NSString *)url streamType:(NSString *)streamType)
+RCT_EXPORT_METHOD(loadUrl:(NSString *)soundId url:(NSString *)url streamType:(NSString *)streamType volume:(CGFloat)volume)
 {
 	RNPlayerData *playerData = [self getPlayerDataForId:soundId];
 	if (!playerData) {
-		playerData = [self prepareUrl:soundId url:url];
+		playerData = [self prepareUrl:soundId url:url volume:volume];
 	}
 }
 
-RCT_EXPORT_METHOD(playSoundFile:(NSString *)soundId name:(NSString *)name numberofLoops:(NSInteger)numberofLoops streamType:(NSString *)streamType)
+RCT_EXPORT_METHOD(playSoundFile:(NSString *)soundId name:(NSString *)name numberofLoops:(NSInteger)numberofLoops streamType:(NSString *)streamType volume:(CGFloat)volume)
 {
 	RNPlayerData *playerData = [self getPlayerDataForId:soundId];
 	if (!playerData) {
 		NSString *pathWithoutExt = [name stringByDeletingPathExtension];
 		NSString *type = [name pathExtension];
-		playerData = [self mountSoundFile:soundId name:pathWithoutExt ofType:type numberofLoops:numberofLoops];
+		playerData = [self mountSoundFile:soundId name:pathWithoutExt ofType:type numberofLoops:numberofLoops volume:volume];
 	}
 	
 	if (playerData.audioPlayer) {
+		[playerData.audioPlayer setVolume:volume];
 		[playerData.audioPlayer play];
 	}
 }
 
-RCT_EXPORT_METHOD(loadSoundFile:(NSString *)soundId name:(NSString *)name numberofLoops:(NSInteger)numberofLoops streamType:(NSString *)streamType)
+RCT_EXPORT_METHOD(loadSoundFile:(NSString *)soundId name:(NSString *)name numberofLoops:(NSInteger)numberofLoops streamType:(NSString *)streamType volume:(CGFloat)volume)
 {
 	RNPlayerData *playerData = [self getPlayerDataForId:soundId];
 	if (!playerData) {
 		NSString *pathWithoutExt = [name stringByDeletingPathExtension];
 		NSString *type = [name pathExtension];
-		playerData = [self mountSoundFile:soundId name:pathWithoutExt ofType:type numberofLoops:numberofLoops];
+		playerData = [self mountSoundFile:soundId name:pathWithoutExt ofType:type numberofLoops:numberofLoops volume:volume];
 	}
 }
 
@@ -240,6 +243,7 @@ RCT_EXPORT_METHOD(stopAllSounds)
 			[data.player pause];
 		}
 	}
+	[self.players removeAllObjects];
 }
 
 RCT_EXPORT_METHOD(seek:(NSString*)soundId seconds:(float)seconds)
@@ -256,12 +260,22 @@ RCT_EXPORT_METHOD(seek:(NSString*)soundId seconds:(float)seconds)
 RCT_EXPORT_METHOD(setSpeaker:(BOOL) on)
 {
     AVAudioSession *session = [AVAudioSession sharedInstance];
-    if (on) {
-        [session setCategory: AVAudioSessionCategoryPlayAndRecord error: nil];
-        [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
-    } else {
-        [session setCategory: AVAudioSessionCategoryPlayback error: nil];
-        [session overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
+	NSError *error;
+    if (on)
+	{
+//        [session setCategory: AVAudioSessionCategoryPlayAndRecord error: nil];
+//        [session overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
+		
+		[session setCategory:AVAudioSessionCategoryPlayAndRecord mode:AVAudioSessionModeVoiceChat options:(AVAudioSessionCategoryOptionMixWithOthers & AVAudioSessionCategoryOptionAllowBluetooth) error:&error];
+		[session overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
+    }
+	else
+	{
+//        [session setCategory: AVAudioSessionCategoryPlayback error: nil];
+//        [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
+		
+		[session setCategory:AVAudioSessionCategoryPlayback mode:AVAudioSessionModeVoiceChat options:(AVAudioSessionCategoryOptionMixWithOthers & AVAudioSessionCategoryOptionAllowBluetooth) error:&error];
+		[session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
     }
     [session setActive:true error:nil];
 }
