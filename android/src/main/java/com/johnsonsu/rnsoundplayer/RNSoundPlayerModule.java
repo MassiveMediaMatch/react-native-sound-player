@@ -29,7 +29,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void playSoundFile(final String id, String name, int numberOfLoops, String streamType, int volume, Promise promise) {
+	public void playSoundFile(final String id, String name, int numberOfLoops, String streamType, float volume, Promise promise) {
 		try {
 			final MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, name, StreamType.fromString(streamType), numberOfLoops, volume);
 			player.setOnCompletionListener(new MediaPlayerPool.OnCompletionListener(pool, id) {
@@ -51,7 +51,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void loadSoundFile(final String id, String name, int numberOfLoops, String streamType, int volume, Promise promise) {
+	public void loadSoundFile(final String id, String name, int numberOfLoops, String streamType, float volume, Promise promise) {
 		try {
 			MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, name, StreamType.fromString(streamType), numberOfLoops, volume);
 			player.setOnCompletionListener(new MediaPlayerPool.OnCompletionListener(pool, id) {
@@ -66,7 +66,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void playUrl(final String id, final String url, String streamType, int volume, Promise promise) {
+	public void playUrl(final String id, final String url, String streamType, float volume, Promise promise) {
 		try {
 			final MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, url, StreamType.fromString(streamType), 0, volume);
 			player.setOnCompletionListener(new MediaPlayerPool.OnCompletionListener(pool, id) {
@@ -87,7 +87,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void loadUrl(final String id, final String url, String streamType, int volume, Promise promise) {
+	public void loadUrl(final String id, final String url, String streamType, float volume, Promise promise) {
 		try {
 			MediaPlayer player = pool.prepareSound(getReactApplicationContext(), id, url, StreamType.fromString(streamType), 0, volume);
 			player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {

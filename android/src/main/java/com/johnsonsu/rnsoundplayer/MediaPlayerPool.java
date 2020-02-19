@@ -113,7 +113,7 @@ public class MediaPlayerPool {
 		players.clear();
 	}
 
-	public MediaPlayer prepareSound(Context context, final String id, String uri, StreamType streamType, int numberOfLoops, int volume) throws IOException {
+	public MediaPlayer prepareSound(Context context, final String id, String uri, StreamType streamType, int numberOfLoops, float volume) throws IOException {
 		// get instance
 		MediaPlayer player;
 		loops.put(id, 0);
