@@ -228,8 +228,13 @@ public class MediaPlayerPool {
 			Log.v("MediaPlayerPool", id + "=loop (" + currentLoop + ") of max (" + maxLoop + ")");
 			if (maxLoop < 0 || maxLoop > 1) {
 				if (maxLoop < 0 || currentLoop < maxLoop) {
-					mp.seekTo(0);
-					mp.start();
+					try {
+						mp.seekTo(0);
+						mp.start();
+					} catch (IllegalStateException e) {
+						mp.release();
+						pool.players.remove(id);
+					}
 				} else {
 					Log.v("MediaPlayerPool", id + "=released");
 					mp.release();
