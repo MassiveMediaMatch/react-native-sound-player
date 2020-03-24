@@ -16,6 +16,8 @@ import java.net.URL;
 import java.util.HashMap;
 
 public class MediaPlayerPool {
+	private static final String TAG = MediaPlayerPool.class.getSimpleName();
+
 	private HashMap<String, MediaPlayer> players;
 	private HashMap<String, Integer> loops;
 	private HashMap<String, Integer> maxLoops;
@@ -59,6 +61,8 @@ public class MediaPlayerPool {
 		if (player != null) {
 			try {
 				player.stop();
+				player.release();
+				players.remove(id);
 				return true;
 			} catch (IllegalStateException e) {
 				return false;
@@ -120,20 +124,20 @@ public class MediaPlayerPool {
 		maxLoops.put(id, numberOfLoops);
 		player = players.get(id);
 		if (player == null) {
-			Log.v("MediaPlayerPool", id + "=new player (" + players.size() + ")");
+			Log.v(TAG, id + "=new player (" + players.size() + ")");
 			player = new MediaPlayer();
 			players.put(id, player);
 		} else {
-			Log.v("MediaPlayerPool", id + "=reset player (" + players.size() + ")");
+			Log.v(TAG, id + "=reset player (" + players.size() + ")");
 			player.reset();
 		}
 		// set data sources
 		if (isValidInternetUrl(uri)) {
-			Log.v("MediaPlayerPool", id + "=set internet data source");
+			Log.v(TAG, id + "=set internet data source");
 			player.setDataSource(uri);
 		} else {
 			// check if it's a file, or a raw identifier
-			Log.v("MediaPlayerPool", id + "=set file descriptor");
+			Log.v(TAG, id + "=set file descriptor");
 			if (uri.contains(".")) {
 				AssetFileDescriptor afd = context.getAssets().openFd(uri);
 				player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
@@ -202,6 +206,7 @@ public class MediaPlayerPool {
 		@Override
 		public void onPrepared(MediaPlayer mp) {
 			if (playWhenPrepared) {
+				Log.v(TAG,  "=play when prepared");
 				mp.start();
 			}
 			onPrepared();
@@ -225,7 +230,7 @@ public class MediaPlayerPool {
 			int currentLoop = pool.loops.containsKey(id) ? pool.loops.get(id) : 0;
 			int maxLoop = pool.maxLoops.containsKey(id) ? pool.maxLoops.get(id) : 0;
 
-			Log.v("MediaPlayerPool", id + "=loop (" + currentLoop + ") of max (" + maxLoop + ")");
+			Log.v(TAG, id + "=loop (" + currentLoop + ") of max (" + maxLoop + ")");
 			if (maxLoop < 0 || maxLoop > 1) {
 				if (maxLoop < 0 || currentLoop < maxLoop) {
 					try {
@@ -236,12 +241,12 @@ public class MediaPlayerPool {
 						pool.players.remove(id);
 					}
 				} else {
-					Log.v("MediaPlayerPool", id + "=released");
+					Log.v(TAG, id + "=released");
 					mp.release();
 					pool.players.remove(id);
 				}
 			} else {
-				Log.v("MediaPlayerPool", id + "=released");
+				Log.v(TAG, id + "=released");
 				mp.release();
 				pool.players.remove(id);
 			}
